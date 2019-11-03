@@ -1,0 +1,14 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
+  client.cpp
+  mmap.cpp
+C:\Users\ricki\Desktop\internal\umclient - Kopie\umclient\mmap.cpp(44): warning C4101: "lPid": Unreferenzierte lokale Variable
+C:\Users\ricki\Desktop\internal\umclient - Kopie\umclient\mmap.cpp(195): warning C4090: "Argument": Unterschiedliche "__unaligned"-Qualifizierer
+C:\Users\ricki\Desktop\internal\umclient - Kopie\umclient\mmap.cpp(209): warning C4090: "Argument": Unterschiedliche "__unaligned"-Qualifizierer
+  umclient.cpp
+C:\Users\ricki\Desktop\internal\umclient - Kopie\umclient\umclient.cpp(10): warning C4101: "pid": Unreferenzierte lokale Variable
+  utils.cpp
+  Code wird generiert.
+  Previous IPDB not found, fall back to full compilation.
+  All 387 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Codegenerierung ist abgeschlossen.
+  umclient.vcxproj -> C:\Users\ricki\Desktop\internal\umclient - Kopie\x64\Release\umclient.exe
