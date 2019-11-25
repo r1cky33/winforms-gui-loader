@@ -1,5 +1,5 @@
 # ultinject_krnl
-A secure driver-interface for moder BE/EAC versions. The kernelmode code gets executed by the UM-process that calls gHalDispatchTable[1] (hooked by the driver on load)
+A secure driver-interface for modern BE/EAC versions. The kernelmode code gets executed by the UM-process that calls gHalDispatchTable[1] (hooked by the driver on load)
 
   -dll-injection capabilities
   
