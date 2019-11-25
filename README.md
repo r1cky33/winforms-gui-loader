@@ -3,7 +3,7 @@ driver interface with
 
   -dll-injection capabilities
   
-  -km-um communication using an small "shared" memory buffer in the usermode process
+  -km-um communication using a small "shared" memory buffer within the usermode process
   
   -clearing traces of the unloaded vulnerable driver
 
