@@ -6,4 +6,4 @@ driver interface with
 
 this whole shit is coded by me and was ALOT OF WORK. so pls treat it with respect xD
 
-credits to @fisherprice from UC for cleaning MmUnloadedDrivers & PiDDBCacheTable structures (signatures should at least for for 1803-1903)
+credits to @fisherprice from UC for cleaning MmUnloadedDrivers & PiDDBCacheTable structures (signatures should at least work for 1803-1903)
