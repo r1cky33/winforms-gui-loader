@@ -1,0 +1,23 @@
+﻿  Building 'krnl' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
+  cleaner.cpp
+D:\projects\test\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
+  main.cpp
+D:\projects\test\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
+  krnlutils.cpp
+D:\projects\test\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
+D:\projects\test\krnl_interface\kernel_socket_server\krnlutils.cpp(316): warning C4311: "Typumwandlung": Zeigerverkürzung von "HANDLE" zu "DWORD"
+  server.cpp
+D:\projects\test\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
+  utils.cpp
+  Code wird generiert...
+  kernel_socket_server.vcxproj -> D:\projects\test\krnl_interface\x64\Release\krnl.sys
+  Done Adding Additional Store
+  Successfully signed: D:\projects\test\krnl_interface\x64\Release\krnl.sys
+  
+  Inf2Cat task was skipped as there were no inf files to process
+  
