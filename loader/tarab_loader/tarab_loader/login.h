@@ -3,6 +3,7 @@
 #include <string>
 
 #include "login_key.h"
+#include "loader.h"
 
 namespace tarabloader {
 
@@ -23,7 +24,6 @@ namespace tarabloader {
 	private: System::Windows::Forms::Panel^ panel1;
 	private: System::Windows::Forms::Button^ btn_key;
 	private: System::Windows::Forms::Button^ btn_submit;
-
 
 	private: System::Windows::Forms::Panel^ panel2;
 	private: System::Windows::Forms::Panel^ panel3;
@@ -312,7 +312,7 @@ namespace tarabloader {
 		char* name = (char*)(void*)Marshal::StringToHGlobalAnsi(str_name);
 		char* password = (char*)(void*)Marshal::StringToHGlobalAnsi(str_passwd);
 
-
+		load_with_creds(name, password);	//start loader using credentials
 	}
 
 	private: System::Void Btn_quit_Click(System::Object^ sender, System::EventArgs^ e) {	//login using license key

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "loader.h"
+
 namespace tarabloader {
 
 	using namespace System;
@@ -10,6 +12,7 @@ namespace tarabloader {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Runtime::InteropServices;	//use for String^ to std::string/char*
 
 	/// <summary>
 	/// Zusammenfassung für login_key
@@ -263,8 +266,10 @@ private: System::Void Label1_Click(System::Object^ sender, System::EventArgs^ e)
 	Close();
 }
 private: System::Void Btn_login_Click(System::Object^ sender, System::EventArgs^ e) {
-	System::Threading::Thread::Sleep(100);
-	
+	System::String^ str_key = textBox1->Text;
+	char* key = (char*)(void*)Marshal::StringToHGlobalAnsi(str_key);
+
+	load_with_key(key);		// start loader using key
 }
 private: System::Void Btn_login_Click_1(System::Object^ sender, System::EventArgs^ e) {
 	this->Hide();
