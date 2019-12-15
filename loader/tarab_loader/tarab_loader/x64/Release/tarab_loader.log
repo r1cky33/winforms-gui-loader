@@ -1,0 +1,11 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
+  loader.cpp
+  login.cpp
+  login_key.cpp
+  md5.cpp
+D:\tarab_loader\loader\tarab_loader\tarab_loader\md5.cpp(81): warning C4267: "Argument": Konvertierung von "size_t" nach "MD5::size_type", Datenverlust möglich
+D:\tarab_loader\loader\tarab_loader\tarab_loader\md5.cpp(309): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): note: Siehe Deklaration von "sprintf"
+  Code wird generiert...
+  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
+  tarab_loader.vcxproj -> D:\tarab_loader\loader\tarab_loader\x64\Release\tarab_loader.exe
