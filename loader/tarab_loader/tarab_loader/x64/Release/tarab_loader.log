@@ -1,5 +1,20 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
+  loader.cpp
   login.cpp
   login_key.cpp
+  md5.cpp
+D:\tarab_loader\loader\tarab_loader\tarab_loader\md5.cpp(81): warning C4267: "Argument": Konvertierung von "size_t" nach "MD5::size_type", Datenverlust möglich
+D:\tarab_loader\loader\tarab_loader\tarab_loader\md5.cpp(309): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): note: Siehe Deklaration von "sprintf"
   Code wird generiert...
-  tarab_loader.vcxproj -> D:\git_repos\ultinject_krnl\loader\tarab_loader\x64\Release\tarab_loader.exe
+  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
+  kdmapper.lib(utils.obj) : Es wurde ein mit /GL kompiliertes MSIL .netmodule oder module gefunden. Verknüpfung wird mit /LTCG erneut gestartet. Fügen Sie /LTCG zur Linkbefehlszeile hinzu, um die Linkerleistung zu erhöhen.
+  Code wird generiert.
+  Codegenerierung ist abgeschlossen.
+kdmapper.lib(utils.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(utils.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+kdmapper.lib(main.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(main.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+kdmapper.lib(intel_driver.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(intel_driver.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+kdmapper.lib(kdmapper.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(kdmapper.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+kdmapper.lib(service.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(service.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+kdmapper.lib(portable_executable.obj) : warning LNK4099: PDB "kdmapper.pdb" wurde nicht mit "kdmapper.lib(portable_executable.obj)" oder an "D:\tarab_loader\loader\tarab_loader\x64\Release\kdmapper.pdb" gefunden; Objekt wird verkn³pft, als ob keine Debuginformationen vorhanden wõren.
+  tarab_loader.vcxproj -> D:\tarab_loader\loader\tarab_loader\x64\Release\tarab_loader.exe

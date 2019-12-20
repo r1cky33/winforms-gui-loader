@@ -108,10 +108,10 @@
       </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;advapi32.lib;libcurl_a_debug.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>Main</EntryPointSymbol>
-      <AdditionalLibraryDirectories>D:\tarab_loader\curl-7.67.0\builds\x64_debug\libcurl-vc16-x64-release-static-ipv6-sspi-winssl\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\tarab_loader\curl-7.67.0\builds\x64_debug\libcurl-vc16-x64-debug-static-ipv6-sspi-winssl\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,10 +130,10 @@
       <AdditionalIncludeDirectories>D:\tarab_loader\curl-7.67.0\builds\x64_release\libcurl-vc16-x64-release-static-ipv6-sspi-winssl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libcurl_a.lib;Normaliz.lib;Wldap32.lib;Ws2_32.lib;Crypt32.lib;advapi32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>Version.lib;atls.lib;kdmapper.lib;libcurl_a.lib;Normaliz.lib;Wldap32.lib;Ws2_32.lib;Crypt32.lib;advapi32.lib;</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>Main</EntryPointSymbol>
-      <AdditionalLibraryDirectories>D:\tarab_loader\curl-7.67.0\builds\x64_release\libcurl-vc16-x64-release-static-ipv6-sspi-winssl\lib\%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.20.27508\atlmfc\lib\x64;D:\tarab_loader\static_libs;D:\tarab_loader\curl-7.67.0\builds\x64_release\libcurl-vc16-x64-release-static-ipv6-sspi-winssl\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

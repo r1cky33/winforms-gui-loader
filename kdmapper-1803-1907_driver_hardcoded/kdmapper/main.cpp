@@ -16,6 +16,10 @@ int kdmap()
 	//	return -1;
 	//}
 
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+
+
 	HANDLE iqvw64e_device_handle = intel_driver::Load();
 
 	if (!iqvw64e_device_handle || iqvw64e_device_handle == INVALID_HANDLE_VALUE)
@@ -32,4 +36,6 @@ int kdmap()
 
 	intel_driver::Unload(iqvw64e_device_handle);
 	std::cout << "[+] success" << std::endl;
+
+	return 0;
 }
