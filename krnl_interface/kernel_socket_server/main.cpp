@@ -9,7 +9,7 @@ PVOID	originalAddress		= NULL;
 
 extern void start_server();
 
-void hkHandler() {
+NTSTATUS hkHandler() {
 	DbgPrintEx(0, 0, "> hkHandler called\n");
 
 	gHalDispatchTable[1] = originalAddress; //restore gHalDispatchTable
@@ -19,6 +19,9 @@ void hkHandler() {
 	clean_unloaded_drivers();
 	
 	start_server();
+
+	//leave
+	return STATUS_UNSUCCESSFUL;
 }
 
 extern "C" NTSTATUS DriverEntry(

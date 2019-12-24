@@ -230,8 +230,6 @@ void handle_write_to_readonly() {
 		return;
 	}
 
-	KAPC_STATE apc;
-	KeStackAttachProcess(process_dst, &apc);
 
 	//_disable();
 	__writecr0(__readcr0() & (~(1 << 16)));
@@ -245,8 +243,6 @@ void handle_write_to_readonly() {
 
 	__writecr0(__readcr0() | (1 << 16));
 	//_enable();
-
-	KeUnstackDetachProcess(&apc);
 
 	finish_req();
 
@@ -283,8 +279,7 @@ void job_handler() {
 			DbgPrintEx(0, 0, "> DRIVER_STOP\n");
 			NTSTATUS status = PsTerminateSystemThread(0);
 			
-			if (!NT_SUCCESS(status))
-				break;
+			break;
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_GET_UM_MODULE) {
 			DbgPrintEx(0, 0, "> DRIVER_GET_UM_MODULE\n");

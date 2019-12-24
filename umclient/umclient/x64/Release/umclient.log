@@ -1,0 +1,13 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
+  client.cpp
+  hook.cpp
+  mmap.cpp
+D:\tarab_loader\umclient - Kopie\umclient\mmap.cpp(124): warning C4090: "Argument": Unterschiedliche "__unaligned"-Qualifizierer
+D:\tarab_loader\umclient - Kopie\umclient\mmap.cpp(138): warning C4090: "Argument": Unterschiedliche "__unaligned"-Qualifizierer
+  umclient.cpp
+  utils.cpp
+  Code wird generiert.
+  Previous IPDB not found, fall back to full compilation.
+  All 364 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Codegenerierung ist abgeschlossen.
+  umclient.vcxproj -> D:\tarab_loader\umclient - Kopie\x64\Release\umclient.exe
