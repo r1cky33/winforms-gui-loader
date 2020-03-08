@@ -20,43 +20,24 @@ bool mmap::attach_to_process(const char* process_name) {
 		return false;
 }
 
-bool mmap::load_dll(const char* file_name) {
-	std::ifstream f(file_name, std::ios::binary | std::ios::ate);
-
-	if (!f) {
-		std::cout << "unable to open dll file!" << std::endl;
-		return false;
-	}
-
-	std::ifstream::pos_type pos{ f.tellg() };
-	data_size = pos;
-
-	raw_data = new uint8_t[data_size];
+bool mmap::load_dll(uint8_t image[]) {
+	data_size = sizeof(image);
+	raw_data = image;
 
 	if (!raw_data)
 		return false;
 
-	f.seekg(0, std::ios::beg);
-	f.read((char*)raw_data, data_size);
-
-	std::cout << raw_data << std::endl;
-
-	f.close();
 	return true;
 }
 
-
-
 bool mmap::inject() {
 	if (!pid) {
-		std::cout << "[-] no pid!" << std::endl;
+		std::cout << "[-] ERROR 1" << std::endl;
 		return false;
 	}
 
-	std::cout << "[+] pid: " << pid << std::endl;
-
 	if (!raw_data) {
-		std::cout << "[-] no raw_data loaded!" << std::endl;
+		std::cout << "[-] ERROR 2" << std::endl;
 		return false;
 	}
 
@@ -79,28 +60,49 @@ bool mmap::inject() {
 	IMAGE_DOS_HEADER* dos_header{ (IMAGE_DOS_HEADER*)raw_data };
 
 	if (dos_header->e_magic != IMAGE_DOS_SIGNATURE) {
-		std::cout << "[-] dos_header->e_magic != IMAGE_DOS_SIGNATURE" << std::endl;
+		std::cout << "[-] ERROR 3" << std::endl;
 		return false;
 	}
 
 	IMAGE_NT_HEADERS* nt_header{ (IMAGE_NT_HEADERS*)(&raw_data[dos_header->e_lfanew]) };
 
+	driver::init();
+	Sleep(1000);
+
 	if (nt_header->Signature != IMAGE_NT_SIGNATURE) {
-		std::cout << "[-] nt_header->Signature != IMAGE_NT_SIGNATURE" << std::endl;
+		std::cout << "[-] ERROR 4" << std::endl;
 		return false;
 	}
+	uint32_t sizebuff = 0;
+	uint32_t size = 0;
+	uint64_t base = 0;
 
-	uint64_t base = driver::virtual_alloc(pid,
-		MEM_COMMIT | MEM_RESERVE,
-		PAGE_EXECUTE_READWRITE,
-		nt_header->OptionalHeader.SizeOfImage);
+	base = driver::get_um_module(pid, "7z.dll", sizebuff);
+
+	for (int i = 0; i < 120; i++) {
+		base = driver::get_um_module(pid, "7z.dll", sizebuff);
+		Sleep(1000);
+
+		if (base != 0)
+			break;
+	}
+
+	driver::extend_module(pid, (size_t)nt_header->OptionalHeader.SizeOfImage, "7z.dll");
+	base = driver::get_um_module(pid, "7z.dll", size);
+
+	driver::extend_module(pid, (size_t)nt_header->OptionalHeader.SizeOfImage, "7z.dll");
+	base = driver::get_um_module(pid, "7z.dll", size);
+
+	if (size > sizebuff) {
+		base = base + (uint64_t)size - (uint64_t)nt_header->OptionalHeader.SizeOfImage;
+	}
 
 	if (!base) {
-		std::cout << "[-] failed to allocate base! " << base << std::endl;
+		std::cout << "[-] ERROR 5" << base << std::endl;
 		return false;
 	}
 
-	std::cout << "[+] allocated base: 0x" << std::hex << base << std::endl;
+	Sleep(500);
 
 	uint64_t stub_base = driver::virtual_alloc(pid,
 		MEM_COMMIT | MEM_RESERVE,
@@ -108,11 +110,9 @@ bool mmap::inject() {
 		sizeof(dll_stub));
 
 	if (!stub_base) {
-		std::cout << "[-] failed to allocate stub_base!" << std::endl;
+		std::cout << "[-] ERROR 6" << std::endl;
 		return false;
 	}
-
-	std::cout << "[+] allocated stub_base: 0x" << std::hex << stub_base << std::endl;
 
 	PIMAGE_IMPORT_DESCRIPTOR import_descriptor{ (PIMAGE_IMPORT_DESCRIPTOR)get_ptr_from_rva(
 												(uint64_t)(nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress),
@@ -120,7 +120,7 @@ bool mmap::inject() {
 												raw_data) };
 
 	if (nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].Size) {
-		std::cout << "[+] solving imports!" << std::endl;
+		std::cout << "[+] done" << std::endl;
 		solve_imports(raw_data, nt_header, import_descriptor);
 	}
 
@@ -130,7 +130,7 @@ bool mmap::inject() {
 																	raw_data) };
 
 	if (nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size) {
-		std::cout << "[+] solve relocations!" << std::endl;
+		std::cout << "[+] done" << std::endl;
 		solve_relocations((uint64_t)raw_data,
 			base,
 			nt_header,
@@ -138,15 +138,13 @@ bool mmap::inject() {
 			nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].Size);
 	}
 
-	std::cout << "[+] parsing imports!" << std::endl;
 	if (!parse_imports()) {
-		std::cout << "[-] parsing imports failed!" << std::endl;
+		std::cout << "[-] [-] ERROR 7" << std::endl;
 		return false;
 	}
 
 	driver::write<void>(pid, (uintptr_t)raw_data, base, nt_header->FileHeader.SizeOfOptionalHeader + sizeof(nt_header->FileHeader) + sizeof(nt_header->Signature));
 
-	std::cout << "[+] mapping pe sections! " << std::endl;
 	map_pe_sections(base, nt_header);
 
 	uint64_t entry_point{ (uint64_t)base + nt_header->OptionalHeader.AddressOfEntryPoint };
@@ -155,10 +153,9 @@ bool mmap::inject() {
 	uint64_t pRemoteFunc = GetFunctionAddress("user32.dll", "PeekMessageW", true);
 
 	if (!pRemoteFunc) {
-		std::cout << "[+] failed to get func_address! " << std::endl;
+		std::cout << "[-] ERROR 8" << std::endl;
 		return false;
 	}
-	std::cout << "[+] remote func: " << pRemoteFunc << std::endl;
 
 	*(uint64_t*)& dll_stub[133] = (uint64_t)(pRemoteFunc + 0x14);
 	*(uint64_t*)& dll_stub[69] = (uint64_t)base;
@@ -167,10 +164,7 @@ bool mmap::inject() {
 	//steamoverlay is hooking the first 5 bytes of PeekMessageW
 	Hook(pid, (uintptr_t)(pRemoteFunc + 0x5), stub_base, dll_stub, sizeof(dll_stub));
 
-	std::cout << "[+] restoring function patch!" << std::endl;
 	WaitToPatchBack(pid, stub_base + sizeof(dll_stub) + 0x2, pRemoteFunc + 0x5);
-
-	std::cout << "[+] injected successfully!" << std::endl;
 
 	return true;
 }
@@ -223,8 +217,6 @@ void mmap::solve_relocations(uint64_t base, uint64_t relocation_base, IMAGE_NT_H
 bool mmap::parse_imports() {
 	auto base = driver::get_process_base_by_id(pid);
 
-	std::cout << "base by proc id: " << std::hex << base << std::endl;
-
 	if (!base) {
 		return false;
 	}
@@ -244,8 +236,6 @@ bool mmap::parse_imports() {
 		while (original_first_thunk.u1.AddressOfData) {
 			char name[256];
 			driver::copy_memory(pid, (uint64_t)(base + original_first_thunk.u1.AddressOfData + 0x2), GetCurrentProcessId(), (uint64_t)name, 256);
-
-			std::cout << "	> parsed: " << name << std::endl;
 
 			std::string str_name(name);
 			auto thunk_offset{ thunk_count * sizeof(uintptr_t) };
@@ -267,8 +257,9 @@ bool mmap::parse_imports() {
 }
 
 uint64_t mmap::get_proc_address(char* module_name, char* func) {
-	uint64_t remote_module = driver::get_um_module(pid, module_name);
-	std::cout << "remote module_addr: " << remote_module << "	remote module name: " << module_name << "	module_function" << func << std::endl;
+	uint32_t size = 0;	//size of the module ... not used here
+
+	uint64_t remote_module = driver::get_um_module(pid, module_name, size);
 	uint64_t local_module{ (uint64_t)GetModuleHandle(module_name) };
 	uint64_t delta{ remote_module - local_module };
 	return ((uint64_t)GetProcAddress((HMODULE)local_module, func) + delta);

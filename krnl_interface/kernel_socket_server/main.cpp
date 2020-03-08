@@ -40,7 +40,7 @@ extern "C" NTSTATUS DriverEntry(
 	originalAddress = gHalDispatchTable[1];	//save the original value
 	gHalDispatchTable[1] = &hkHandler;		//patch gHalDispatchTable
 
-	DbgPrintEx(0, 0, "> HalDispatchTable %llx\n", gHalDispatchTable);
+	//DbgPrintEx(0, 0, "> HalDispatchTable %llx\n", gHalDispatchTable);
 
 	return STATUS_SUCCESS;
 }

@@ -1,5 +1,0 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(422,5): warning MSB8038: Die Spectre-Entschärfung ist aktiviert, aber es wurden keine entschärften Spectre-Bibliotheken gefunden. Stellen Sie sicher, dass die Visual Studio-Workload die entschärften Spectre-Bibliotheken enthält. Weitere Informationen finden Sie unter https://aka.ms/Ofhn4c.
-  login.cpp
-  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
-  login.obj : MSIL-Modulgefunden; inkrementelles Verknüpfen wird für MSIL deaktiviert; vollständiger Link wird durchgeführt
-LINK : fatal error LNK1104: Datei "MSVCRTD.lib" kann nicht ge÷ffnet werden.

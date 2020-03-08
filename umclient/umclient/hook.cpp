@@ -16,10 +16,10 @@ void Hook(uint32_t pid, uintptr_t toHook, uintptr_t pRemoteShell, byte* dll_stub
 	memcpy(dll_stub, orig_buffer, sizeof(orig_buffer));
 
 	//write the stub
-	std::cout << "[+] writing dll_stub! " << std::endl;
+	std::cout << "[+] init " << std::endl;
 	driver::write<void>(pid, (uintptr_t)dll_stub, pRemoteShell, size);
 
-	system("pause");
+	Sleep(100);
 
 	//second nop the original bytes
 	//driver::copy_memory(GetCurrentProcessId(), (uintptr_t)nop_buffer, pid, toHook, sizeof(nop_buffer));
@@ -34,7 +34,6 @@ void WaitToPatchBack(uint32_t pid, uint64_t pCheckBit, uint64_t pRemoteHook) {
 	byte checkbyte = 0x0;
 	while (checkbyte == 0x0) {
 		checkbyte = driver::read<byte>(pid, pCheckBit);
-		std::cout << "[+] reading checkbyte! :" << std::hex << checkbyte << std::endl;
 	}
 
 	//patch back hooked function

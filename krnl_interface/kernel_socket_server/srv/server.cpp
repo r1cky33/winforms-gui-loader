@@ -2,7 +2,13 @@
 #include "../krnlutils.h"
 #include "shared_defs.h"
 #include "../imports.h"
+#include "../utils/utils.h"
+
 #include <intrin.h>
+
+extern PMMVAD(*MiAllocateVad)(UINT_PTR start, UINT_PTR end, LOGICAL deletable);
+extern NTSTATUS(*MiInsertVadCharges)(PMMVAD vad, PEPROCESS process);
+extern VOID(*MiInsertVad)(PMMVAD vad, PEPROCESS process);
 
 void read_um() {
 	RtlCopyMemory(&shBuff.buff_0x0, (uint64_t*)(sharedBuffBase), sizeof(uint64_t));
@@ -106,21 +112,16 @@ void handle_virtual_protect() {
 	PEPROCESS target;
 	PVOID protect_base = (PVOID)local.addr;
 
-	DbgPrintEx(0, 0, "local. pid 0x%p\n", local.pid);
-
 	if (!NT_SUCCESS(PsLookupProcessByProcessId(HANDLE(local.pid), &target)))
 	{
 		finish_req();
 		return;
 	}
 
-	DbgPrintEx(0, 0, "> virtual protect: in->addr: 0x%p , &in->addr: 0x%p ,  &in->size: 0x%p  , in->protect: 0x%p\n", protect_base, &protect_base, &local.size, (ULONG)local.protect);
-
 	KAPC_STATE apc;
 	ULONG old_protection = NULL;
 	KeStackAttachProcess(target, &apc);
 	status = ZwProtectVirtualMemory(ZwCurrentProcess(), &protect_base, &local.size, (ULONG)local.protect, &old_protection);
-	DbgPrintEx(0, 0, "> status: 0x%p", status);
 	KeUnstackDetachProcess(&apc);
 	in->protect = old_protection;
 
@@ -141,14 +142,12 @@ void handle_virtual_alloc() {
 		return;
 	}
 
-	DbgPrintEx(0, 0, "> virtual alloc: in->addr: 0x%p ,  &in->size: 0x%p  , in->allocation_type: 0x%p  ,  in->protect 0x%p\n", (PVOID*)& alloc_base, (PSIZE_T)&in->size,
-		(ULONG)in->allocation_type, (ULONG)in->protect);
-
 	KAPC_STATE apc;
 	KeStackAttachProcess(target, &apc);
 	status = ZwAllocateVirtualMemory(ZwCurrentProcess(), &alloc_base, 0, &local.size,
 		(ULONG)local.allocation_type, (ULONG)local.protect);
 
+	//secure allocated region
 	MmSecureVirtualMemory(alloc_base, local.size, PAGE_READWRITE);
 	KeUnstackDetachProcess(&apc);
 
@@ -182,18 +181,16 @@ void handle_get_um_module() {
 		return;
 	}
 
-	DbgPrintEx(0, 0, "module_name: %ws \n", &module_name);
-
 	uintptr_t moduleBase = krnlutils::get_um_module_base(pProcess, module_name);
+	uint32_t moduleSize = (uint32_t)krnlutils::get_um_module_size(pProcess, module_name);
 
 	if (!moduleBase) {
-		DbgPrintEx(0, 0, "> failed to get processModule : 0x%p\n ", moduleBase);
 		finish_req();
 		return;
 	}
 	else {
-		DbgPrintEx(0, 0, "> got processModule : 0x%p\n ", moduleBase);
-		RtlCopyMemory((uint64_t*)in->dst, &moduleBase, sizeof(uint64_t));
+		RtlCopyMemory((uint64_t*)in->dst_base, &moduleBase, sizeof(uint64_t));
+		RtlCopyMemory((uint64_t*)in->dst_size, &moduleSize, sizeof(uint32_t));
 	}
 
 	finish_req();
@@ -203,8 +200,6 @@ void handle_get_um_module() {
 void handle_secure_memory() {
 	_k_secure_mem* in = (_k_secure_mem*)shBuff.buff_0x8;
 	_k_secure_mem local = { in->addr, in->size, in->probemode };
-
-	DbgPrintEx(0, 0, "MmSecureVirtualMemory params: 0x%p \t 0x%p \t 0x%p \t", local.addr, local.size, local.probemode);
 
 	MmSecureVirtualMemory((PVOID)local.addr, local.size, local.probemode);
 
@@ -250,6 +245,120 @@ void handle_write_to_readonly() {
 	ObDereferenceObject(process_dst);
 }
 
+PLDR_DATA_TABLE_ENTRY GetModuleByName(PEPROCESS process, PWCHAR moduleName) {
+	UNICODE_STRING moduleNameStr = { 0 };
+	RtlInitUnicodeString(&moduleNameStr, moduleName);
+
+	PLIST_ENTRY list = &(PsGetProcessPeb(process)->Ldr->ModuleListLoadOrder);
+	for (PLIST_ENTRY entry = list->Flink; entry != list; ) {
+		PLDR_DATA_TABLE_ENTRY module = CONTAINING_RECORD(entry, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+		if (RtlCompareUnicodeString(&module->BaseDllName, &moduleNameStr, TRUE) == 0) {
+			return module;
+		}
+
+		entry = module->InLoadOrderLinks.Flink;
+	}
+
+	return NULL;
+}
+
+void handle_extend_module() {
+	_k_extend_module* in = (_k_extend_module*)shBuff.buff_0x8;
+
+	uint32_t size = (uint32_t)in->size;
+
+	PEPROCESS process = NULL;
+
+	NTSTATUS status = PsLookupProcessByProcessId((HANDLE)in->pid, &process);
+	if (!NT_SUCCESS(status)) {
+		finish_req();
+		return;
+	}
+
+	utils::FindVADs();
+
+	if (!MiAllocateVad || !MiInsertVad || !MiInsertVadCharges) {
+		DbgPrintEx(0, 0, "> VADs not Found!");
+	}
+
+	WCHAR module_name[256] = {};
+	wcscpy(module_name, in->moduleName);
+
+	if (!module_name[1]) {
+		finish_req();
+		return;
+	}
+
+	DbgPrintEx(0, 0, "> %ws module\n", module_name);
+
+	KeAttachProcess(process);
+
+	DbgPrintEx(0, 0, "attached!");
+
+	PLDR_DATA_TABLE_ENTRY module = GetModuleByName(process, module_name);
+	if (!module) {
+		status = STATUS_NOT_FOUND;
+		goto cleanup;
+	}
+
+	UINT_PTR start = (UINT_PTR)module->DllBase + module->SizeOfImage;
+	UINT_PTR end = start + size - 1;
+
+	MEMORY_BASIC_INFORMATION info = { 0 };
+	status = ZwQueryVirtualMemory(NtCurrentProcess(), (PVOID)start, MemoryBasicInformation, &info, sizeof(info), NULL);
+
+	if (!NT_SUCCESS(status)) {
+		DbgPrintEx(0, 0, "> ERROR 1");
+		goto cleanup;
+	}
+
+	if (info.State != MEM_FREE || info.BaseAddress != (PVOID)start || info.RegionSize < (size_t)size) {
+		status = STATUS_INVALID_ADDRESS;
+		DbgPrintEx(0, 0, "> ERROR 2");
+		goto cleanup;
+	}
+
+	DbgPrintEx(0, 0, "0x%p 0x%p 0x%p \n", MiAllocateVad, MiInsertVad, MiInsertVadCharges);
+	PMMVAD vad = MiAllocateVad(start, end, TRUE);
+	if (!vad) {
+		status = STATUS_INSUFFICIENT_RESOURCES;
+		goto cleanup;
+	}
+
+	static RTL_OSVERSIONINFOW version = { sizeof(RTL_OSVERSIONINFOW) };
+	if (!version.dwBuildNumber) {
+		RtlGetVersion(&version);
+	}
+
+	if (version.dwBuildNumber < 18362) {
+		PMMVAD_FLAGS flags = (PMMVAD_FLAGS)& vad->u1.LongFlags;
+		flags->Protection = MM_EXECUTE_READWRITE;
+		flags->NoChange = 0;
+	}
+	else {
+		PMMVAD_FLAGS_19H flags = (PMMVAD_FLAGS_19H)& vad->u1.LongFlags;
+		flags->Protection = MM_EXECUTE_READWRITE;
+		flags->NoChange = 0;
+	}
+
+	if (!NT_SUCCESS(status = MiInsertVadCharges(vad, process))) {
+		ExFreePool(vad);
+		goto cleanup;
+	}
+
+	// We should call MiLockVad but /shrug
+	MiInsertVad(vad, process);
+	module->SizeOfImage += size;
+
+	//secure the extended region
+	MmSecureVirtualMemory((PVOID)start, size, PAGE_READWRITE);
+
+cleanup:
+	KeDetachProcess();
+	ObDereferenceObject(process);
+	finish_req();
+}
+
 void job_handler() {
 	DbgPrintEx(0, 0, "> job_handler\n");
 
@@ -259,49 +368,43 @@ void job_handler() {
 		if (shBuff.buff_0x0 == (uint64_t)DRIVER_CONTINUE) {			//working
 			continue;
 		}
-		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_GET_BASE) {	//working
-			DbgPrintEx(0, 0, "> DRIVER_GET_PROC_BASE\n");
+		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_GET_BASE) {
 			handle_get_proc_base();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_COPYMEMROY) {
-			DbgPrintEx(0, 0, "> DRIVER_READ\n");
 			handle_copy_memory();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_PROTECT) {
-			DbgPrintEx(0, 0, "> DRIVER_PROTECT\n");
 			handle_virtual_protect();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_ALLOC) {
-			DbgPrintEx(0, 0, "> DRIVER_ALLOC\n");
 			handle_virtual_alloc();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_STOP) {
-			DbgPrintEx(0, 0, "> DRIVER_STOP\n");
 			NTSTATUS status = PsTerminateSystemThread(0);
 			
 			break;
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_GET_UM_MODULE) {
-			DbgPrintEx(0, 0, "> DRIVER_GET_UM_MODULE\n");
 			handle_get_um_module();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_SECURE) {
-			DbgPrintEx(0, 0, "> DRIVER_SECURE\n");
 			handle_secure_memory();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_GET_BASE_BY_ID) {
-			DbgPrintEx(0, 0, "> DRIVER_GET_BASE_BY_ID\n");
 			handle_get_proc_base_by_id();
 		}
 		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_WRITE_TO_READONLY) {
-			DbgPrintEx(0, 0, "> DRIVER_WRITE_TO_READONLY\n");
 			handle_write_to_readonly();
+		}
+		else if (shBuff.buff_0x0 == (uint64_t)DRIVER_EXTEND_MODULE) {
+			handle_extend_module();
 		}
 	}
 }
 
 void start_server() {
-	PEPROCESS pProcess = (PEPROCESS)krnlutils::find_eprocess("umclient.exe");
+	PEPROCESS pProcess = (PEPROCESS)krnlutils::find_eprocess("Y6s1FAa9vi.exe");
 
 	if (!pProcess)
 		return;
@@ -312,7 +415,6 @@ void start_server() {
 		return;
 
 	sharedBuffBase = umProcessBase + OFFSET_SHAREDBUFFER;
-	DbgPrintEx(0, 0, "> sharedBuffBase: 0x%p\n", sharedBuffBase);
 
 	job_handler();
 }

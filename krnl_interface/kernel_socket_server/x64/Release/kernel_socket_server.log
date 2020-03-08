@@ -9,11 +9,16 @@ D:\tarab_loader\krnl_interface\kernel_socket_server\imports.h(63): warning C4273
   krnlutils.cpp
 D:\tarab_loader\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
-D:\tarab_loader\krnl_interface\kernel_socket_server\krnlutils.cpp(318): warning C4311: "Typumwandlung": Zeigerverkürzung von "HANDLE" zu "DWORD"
+D:\tarab_loader\krnl_interface\kernel_socket_server\krnlutils.cpp(361): warning C4311: "Typumwandlung": Zeigerverkürzung von "HANDLE" zu "DWORD"
   server.cpp
 D:\tarab_loader\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
+D:\tarab_loader\krnl_interface\kernel_socket_server\srv\server.cpp(356): warning C4533: Initialisierung von "info" durch "goto cleanup" übersprungen
+  D:\tarab_loader\krnl_interface\kernel_socket_server\srv\server.cpp(307): note: Siehe Deklaration von "info"
+  D:\tarab_loader\krnl_interface\kernel_socket_server\srv\server.cpp(356): note: Siehe Deklaration von "cleanup"
   utils.cpp
+D:\tarab_loader\krnl_interface\kernel_socket_server\imports.h(63): warning C4273: "ZwAllocateVirtualMemory": Inkonsistente DLL-Bindung.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\km\ntifs.h(27981): note: Siehe vorherige Definition von "ZwAllocateVirtualMemory"
   Code wird generiert...
   kernel_socket_server.vcxproj -> D:\tarab_loader\krnl_interface\x64\Release\krnl.sys
   Done Adding Additional Store

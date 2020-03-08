@@ -19,6 +19,9 @@
     <Filter Include="Quelldateien\helper">
       <UniqueIdentifier>{8d27781b-fb1b-4bb8-bec9-273a747e84b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\loader\security">
+      <UniqueIdentifier>{fd8304b6-692c-4bfe-a7f0-df4895261053}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="login.cpp">
@@ -33,6 +36,12 @@
     <ClCompile Include="md5.cpp">
       <Filter>Quelldateien\helper</Filter>
     </ClCompile>
+    <ClCompile Include="crypt.cpp">
+      <Filter>Quelldateien\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="security.cpp">
+      <Filter>Quelldateien\loader\security</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loader.h">
@@ -46,6 +55,9 @@
     </ClInclude>
     <ClInclude Include="md5.h">
       <Filter>Quelldateien\helper</Filter>
+    </ClInclude>
+    <ClInclude Include="security.h">
+      <Filter>Quelldateien\loader\security</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

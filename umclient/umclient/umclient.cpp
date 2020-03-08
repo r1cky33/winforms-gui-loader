@@ -1,24 +1,28 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include <iostream>
 #include <Windows.h>
 
 #include "mmap.h"
 #include "utils.h"
+#include "client.h"
 
-int main()
+int umclient(uint8_t image[])
 {
 	mmap mapper;
 
-	driver::init();
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
 
-	Sleep(500);
+	std::cout << "start PUBG..." << std::endl;
 
-	if (!mapper.attach_to_process("TslGame_BE.exe")) {
-		driver::stop();
+	if (!mapper.attach_to_process("TslGame.exe")) {
+		/*driver::stop();*/
 		return 1;
 	}
-	if (!mapper.load_dll("sample.dll"))	//needs to be compiled statically!
+	if (!mapper.load_dll(image))	//needs to be compiled statically with customized entrypoint!
 	{
-		driver::stop();
+		/*driver::stop();*/
 		return 1;
 	}
 	if (!mapper.inject())

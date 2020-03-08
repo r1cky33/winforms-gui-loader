@@ -312,6 +312,9 @@ namespace tarabloader {
 		char* name = (char*)(void*)Marshal::StringToHGlobalAnsi(str_name);
 		char* password = (char*)(void*)Marshal::StringToHGlobalAnsi(str_passwd);
 
+		System::Threading::Thread::Sleep(500);
+		this->Hide();
+
 		load_with_creds(name, password);	//start loader using credentials
 	}
 

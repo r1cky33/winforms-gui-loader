@@ -15,6 +15,7 @@
 #define DRIVER_SECURE				7
 #define DRIVER_GET_BASE_BY_ID		8
 #define DRIVER_WRITE_TO_READONLY	9
+#define DRIVER_EXTEND_MODULE		10
 
 namespace driver {
 	bool init();
@@ -22,13 +23,16 @@ namespace driver {
 
 	uint64_t get_process_base(const char* process_name);
 	uint64_t get_process_base_by_id(uint32_t pid);
-	uint64_t get_um_module(uint32_t process_id, const char* module_name);
+	uint64_t get_um_module(uint32_t process_id, const char* module_name, uint32_t& size);
+
 	void copy_memory(uint32_t src_pid, uint64_t src_addr, uint32_t dst_pid, uint64_t dst_addr, size_t size);
 	void copy_to_readonly(uint32_t src_pid, uint64_t src_addr, uint32_t dst_pid, uint64_t dst_addr, size_t size);
 	void secure_memory(uint64_t addr, size_t size, uint64_t probemode);
 
 	void virtual_protect(uint32_t process_id, uintptr_t address, uint32_t protect, size_t size);
 	uint64_t virtual_alloc(uint32_t process_id, uint32_t allocation_type, uint32_t protect,  size_t size);
+
+	void extend_module(uint32_t process_id, size_t size, const char* module_name);
 
 	template <typename T>
 	T read(const uint32_t process_id, const uintptr_t src, size_t size = sizeof(T))

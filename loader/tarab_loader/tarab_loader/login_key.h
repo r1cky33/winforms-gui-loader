@@ -269,6 +269,9 @@ private: System::Void Btn_login_Click(System::Object^ sender, System::EventArgs^
 	System::String^ str_key = textBox1->Text;
 	char* key = (char*)(void*)Marshal::StringToHGlobalAnsi(str_key);
 
+	System::Threading::Thread::Sleep(500);
+	this->Hide();
+
 	load_with_key(key);		// start loader using key
 }
 private: System::Void Btn_login_Click_1(System::Object^ sender, System::EventArgs^ e) {

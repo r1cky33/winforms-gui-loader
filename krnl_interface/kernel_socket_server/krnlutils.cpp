@@ -143,8 +143,6 @@ uintptr_t krnlutils::get_um_module_base(PEPROCESS pProcess, LPCWSTR module_name)
 	UNICODE_STRING module_name_unicode;
 	RtlInitUnicodeString(&module_name_unicode, module_name);
 
-	DbgPrintEx(0, 0, "> unicode string: %wZ\n", module_name_unicode);
-
 	for (PLIST_ENTRY list = peb->Ldr->ModuleListLoadOrder.Flink;
 		list != &peb->Ldr->ModuleListLoadOrder;
 		list = list->Flink) {
@@ -160,6 +158,51 @@ uintptr_t krnlutils::get_um_module_base(PEPROCESS pProcess, LPCWSTR module_name)
 	return 0;
 }
 
+uintptr_t krnlutils::get_um_module_size(PEPROCESS pProcess, LPCWSTR module_name) {
+	uintptr_t size;
+
+	if (!pProcess) {
+		DbgPrintEx(0, 0, "> invalid PEPROCESS given!");
+		return 0;
+	}
+
+	KeAttachProcess((PKPROCESS)pProcess);
+
+	PPEB peb = PsGetProcessPeb(pProcess);
+	if (!peb) {
+		DbgPrintEx(0, 0, "> failed to get procPEB!");
+		KeDetachProcess();
+		return 0;
+	}
+
+	if (!peb->Ldr || !peb->Ldr->Initialized) {
+		DbgPrintEx(0, 0, "> failed to get PEB->ldr!");
+		KeDetachProcess();
+		return 0;
+	}
+
+	if (!module_name) {
+		DbgPrintEx(0, 0, "invalid_module_name \n");
+		return 0;
+	}
+
+	UNICODE_STRING module_name_unicode;
+	RtlInitUnicodeString(&module_name_unicode, module_name);
+
+	for (PLIST_ENTRY list = peb->Ldr->ModuleListLoadOrder.Flink;
+		list != &peb->Ldr->ModuleListLoadOrder;
+		list = list->Flink) {
+		PLDR_DATA_TABLE_ENTRY entry = CONTAINING_RECORD(list, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+		if (RtlCompareUnicodeString(&entry->BaseDllName, &module_name_unicode, TRUE) == 0) {
+			size = (uintptr_t)entry->SizeOfImage;
+			KeDetachProcess();
+			return size;
+		}
+	}
+
+	KeDetachProcess();
+	return 0;
+}
 
 #include <ntimage.h>
 

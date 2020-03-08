@@ -6,7 +6,7 @@
 #include <chrono>
 #include <thread>
 
-uint64_t shared[2];
+uint64_t shared[2] = {NULL};
 
 void start_srv() {
 	FARPROC fnNtQueryIntervalProfile = GetProcAddress(LoadLibrary("ntdll.dll"), "NtQueryIntervalProfile");
@@ -21,8 +21,8 @@ void start_srv() {
 }
 
 bool driver::init() {
-	std::cout << "> base: " << GetModuleHandleA(NULL) << std::endl;
-	std::cout << "> shared[] base: " << &shared << std::endl;
+	//std::cout << "> base: " << GetModuleHandleA(NULL) << std::endl;
+	//std::cout << "> shared[] base: " << &shared << std::endl;
 
 	HANDLE hThread = CreateThread(NULL, 
 		0, 
@@ -95,8 +95,9 @@ wchar_t* GetWC(const char* c)
 	return wc;
 }
 
-uint64_t driver::get_um_module(uint32_t process_id, const char* module_name) {
-	uint64_t base = NULL;
+uint64_t driver::get_um_module(uint32_t process_id, const char* module_name, uint32_t &size) {
+	uint64_t mod_base = NULL;
+	uint32_t mod_size = NULL;
 	_k_get_um_module out = {};
 
 	wchar_t* wc = GetWC(module_name);
@@ -104,7 +105,8 @@ uint64_t driver::get_um_module(uint32_t process_id, const char* module_name) {
 	memset(out.moduleName, 0, sizeof(WCHAR) * 256);
 	wcscpy(out.moduleName, wc);
 
-	out.dst = (uint64_t)& base;
+	out.dst_base = (uint64_t)& mod_base;
+	out.dst_size = (uint64_t)& mod_size;
 	out.pid = process_id;
 
 	shared[1] = (uint64_t)& out;
@@ -117,7 +119,9 @@ uint64_t driver::get_um_module(uint32_t process_id, const char* module_name) {
 	shared[1] = (uint64_t)DRIVER_CONTINUE;
 	shared[2] = (uint64_t)DRIVER_CONTINUE;
 
-	return base;
+	size = mod_size;
+
+	return mod_base;
 }
 
 void driver::copy_memory(
@@ -189,7 +193,6 @@ uint64_t driver::virtual_alloc(
 	shared[0] = (uint64_t)DRIVER_ALLOC;
 
 	while (shared[2] == (uint64_t)0) {
-		std::cout << "running allocwait" << std::endl;
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
 
@@ -211,9 +214,32 @@ void driver::secure_memory(
 	shared[0] = (uint64_t)DRIVER_SECURE;
 
 	while (shared[2] == (uint64_t)0) {
-		std::cout << "running securewait" << std::endl;
 		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 	}
+
+	shared[0] = (uint64_t)DRIVER_CONTINUE;
+	shared[1] = (uint64_t)DRIVER_CONTINUE;
+	shared[2] = (uint64_t)DRIVER_CONTINUE;
+}
+
+void driver::extend_module(uint32_t process_id, 
+	size_t size, 
+	const char* module_name) {
+	_k_extend_module out = {};
+	
+	out.pid = process_id;
+	out.size = size;
+
+	wchar_t* wc = GetWC(module_name);
+
+	memset(out.moduleName, 0, sizeof(WCHAR) * 256);
+	wcscpy(out.moduleName, wc);
+
+	shared[1] = (uint64_t)& out;
+	shared[0] = (uint64_t)DRIVER_EXTEND_MODULE;
+
+	while (shared[2] == (uint64_t)0)
+		std::this_thread::sleep_for(std::chrono::nanoseconds(1));
 
 	shared[0] = (uint64_t)DRIVER_CONTINUE;
 	shared[1] = (uint64_t)DRIVER_CONTINUE;

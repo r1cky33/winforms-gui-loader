@@ -21,14 +21,9 @@ void clean_piddb_cache() {
 	size_t size;
 	uintptr_t ntoskrnlBase = krnlutils::get_krnl_module_base("ntoskrnl.exe", size);
 
-	DbgPrintEx(0, 0, "ntoskrnl.exe: %p\n", ntoskrnlBase);
-	DbgPrintEx(0, 0, "ntoskrnl.exe size: %p\n", size);
 	PiDDBCacheTable = (PRTL_AVL_TABLE)utils::dereference(utils::find_pattern<uintptr_t>((void*)ntoskrnlBase, size, "\x48\x8D\x0D\x00\x00\x00\x00\x4C\x89\x35\x00\x00\x00\x00", "xxx????xxx????"), 3);
 
-	DbgPrintEx(0, 0, "PiDDBCacheTable: %p\n", PiDDBCacheTable);
-
 	uintptr_t entry_address = uintptr_t(PiDDBCacheTable->BalancedRoot.RightChild) + sizeof(RTL_BALANCED_LINKS);
-	DbgPrintEx(0, 0, "entry_address: %p\n", entry_address);
 
 	piddbcache* entry = (piddbcache*)(entry_address);
 
@@ -51,10 +46,6 @@ void clean_piddb_cache() {
 			cache_entry->TimeDateStamp = 0x54EAC4 + count;
 			cache_entry->DriverName = RTL_CONSTANT_STRING(L"monitor.sys");
 		}
-		DbgPrintEx(0, 0, "cache_entry count: %lu name: %wZ \t\t stamp: %x\n",
-			count,
-			cache_entry->DriverName,
-			cache_entry->TimeDateStamp);
 	}
 }
 

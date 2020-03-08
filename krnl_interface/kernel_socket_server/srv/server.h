@@ -2,7 +2,9 @@
 
 #include "../stdint.h"
 
-#define OFFSET_SHAREDBUFFER 0xB8E8
+#define OFFSET_SHAREDBUFFER 0xF4DD0
+
+#define MM_EXECUTE_READWRITE (6)
 
 #define DRIVER_CONTINUE				0
 #define DRIVER_GET_BASE				1
@@ -14,6 +16,7 @@
 #define DRIVER_SECURE				7
 #define DRIVER_GET_BASE_BY_ID		8
 #define DRIVER_WRITE_TO_READONLY	9
+#define DRIVER_EXTEND_MODULE		10
 
 uint64_t finisher = 1;
 uint64_t zeroer = 0;

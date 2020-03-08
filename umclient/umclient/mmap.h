@@ -17,7 +17,7 @@ class mmap {
 
 public:
 	bool attach_to_process(const char* process_name);
-	bool load_dll(const char* file_name);
+	bool load_dll(uint8_t file[]);
 	bool inject();
 
 private:

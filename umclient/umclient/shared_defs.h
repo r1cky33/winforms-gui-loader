@@ -31,7 +31,8 @@ struct _k_virtual_protect {
 struct _k_get_um_module {
 	uint32_t pid;
 	WCHAR	 moduleName[256];
-	uint64_t	dst;
+	uint64_t	dst_base;
+	uint64_t	dst_size;
 };
 
 struct _k_secure_mem {
@@ -43,4 +44,10 @@ struct _k_secure_mem {
 struct _k_get_base_by_id {
 	uint32_t pid;
 	uint64_t addr;
+};
+
+struct _k_extend_module {
+	uint32_t pid;
+	WCHAR moduleName[256];
+	size_t size;
 };

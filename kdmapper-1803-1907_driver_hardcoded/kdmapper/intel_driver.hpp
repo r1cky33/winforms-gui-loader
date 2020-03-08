@@ -136,7 +136,7 @@ namespace intel_driver
 
 			if (!NtGdiDdDDIReclaimAllocations2 && !NtGdiGetCOPPCompatibleOPMInformation)
 			{
-				std::cout << "[-] Failed to get export gdi32full.NtGdiDdDDIReclaimAllocations2 / win32u.NtGdiGetCOPPCompatibleOPMInformation" << std::endl;
+				std::cout << "[-] ERROR 24" << std::endl;
 				return false;
 			}
 
@@ -201,7 +201,7 @@ namespace intel_driver
 
 			if (!NtGdiDdDDIReclaimAllocations2)
 			{
-				std::cout << "[-] Failed to get export gdi32full.NtGdiDdDDIReclaimAllocations2" << std::endl;
+				std::cout << "[-] ERROR 25" << std::endl;
 				return false;
 			}
 
