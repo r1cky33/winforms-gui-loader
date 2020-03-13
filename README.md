@@ -7,13 +7,20 @@ Secure Tarab Loader for up2date BE/EAC versions. The kernelmode code gets execut
 ## How it works
 
 
-  -authenticate
+  -authenticate / receive binary
+  
   -decrypt binary
+  
   -map vulnerable driver
+  
   -map payload driver
+  
   -wait for pubg
+  
   -extend 7z.dll
-  -inject binary in extendet region
+  
+  -inject binary in extended region
+  
   
   -km-um communication using a small "shared" memory buffer within the usermode process
   -clearing traces of the unloaded vulnerable driver
