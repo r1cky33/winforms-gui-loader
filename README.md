@@ -30,6 +30,6 @@ Secure Tarab Loader for up2date BE/EAC versions. The kernelmode code gets execut
   
   
 
-**this whole shit is coded by me and was ALOT OF WORK. so pls treat it with respect xD
+**this whole shit is coded by me and was ALOT OF WORK. so pls treat it with respect xD**
 
-**credits to @fisherprice from UC for cleaning MmUnloadedDrivers & PiDDBCacheTable structures (signatures should at least work for 1907)
+**credits to @fisherprice from UC for cleaning MmUnloadedDrivers & PiDDBCacheTable structures (signatures should at least work for 1907 - 1909)**
