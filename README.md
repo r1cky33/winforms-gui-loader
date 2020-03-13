@@ -4,7 +4,7 @@ Secure Tarab Loader for up2date BE/EAC versions. The kernelmode code gets execut
 
 
 
-##How it works
+**How it works**
 
 
   -authenticate
