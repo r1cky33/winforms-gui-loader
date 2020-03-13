@@ -2,7 +2,10 @@
 
 Secure Tarab Loader for up2date BE/EAC versions. The kernelmode code gets executed by the UM-process that calls gHalDispatchTable[1] (hooked by the driver on load)
 
+
+
 ##How it works
+
 
   -authenticate
   -decrypt binary
