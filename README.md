@@ -8,17 +8,11 @@ Secure Loader for up2date BE/EAC versions. The kernelmode code gets executed by 
 
 
   -authenticate / receive binary
-  
   -decrypt binary
-  
-  -map vulnerable driver
-  
+  -load vulnerable driver
   -map payload driver
-  
   -wait for pubg
-  
   -extend 7z.dll
-  
   -inject binary in extended region
   
   
@@ -30,6 +24,6 @@ Secure Loader for up2date BE/EAC versions. The kernelmode code gets executed by 
   
   
 
-**this whole shit is coded by me and was ALOT OF WORK. so pls treat it with respect xD**
+**Basically useless nowdays... Probably can still serve as some learning resource.**
 
 **credits to @fisherprice from UC for cleaning MmUnloadedDrivers & PiDDBCacheTable structures (signatures should at least work for 1907 - 1909)**
