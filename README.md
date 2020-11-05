@@ -1,5 +1,4 @@
 # Loader
-
 Kernel code gets ran by the um-process calling gHalDispatchTable[1] (hooked by the driver on load)
 
 
