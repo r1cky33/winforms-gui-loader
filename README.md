@@ -1,22 +1,17 @@
 # Loader
 
-Secure Loader for up2date BE/EAC versions. The kernelmode code gets executed by the UM-process that calls gHalDispatchTable[1] (hooked by the driver on load)
+Kernel code gets ran by the um-process calling gHalDispatchTable[1] (hooked by the driver on load)
 
 
 
 ## How it works
-
-
   -authenticate / receive binary
   -decrypt binary
   -load vulnerable driver
   -map payload driver
   -wait for pubg
-  -extend 7z.dll
-  -inject binary in extended region
-  
-  
-  
+  -extend VAD of chosen module
+  -inject binary into extended memory
   
   -km-um communication using a small "shared" memory buffer within the usermode process
   
